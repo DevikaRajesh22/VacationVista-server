@@ -1,16 +1,6 @@
 import { timeStamp } from "console";
-import mongoose, { Document, Schema } from "mongoose";
-
-interface Buyer extends Document {
-    name: string,
-    email: string,
-    password: string,
-    isBlocked: boolean,
-    dateOfBirth: Date,
-    phone: string,
-    govtId: string,
-    creationTime: Date
-}
+import mongoose, { Schema } from "mongoose";
+import Buyer from "../../domain/buyer";
 
 const buyerSchema: Schema<Buyer> = new mongoose.Schema({
     name: {
