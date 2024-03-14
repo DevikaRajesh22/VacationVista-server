@@ -7,7 +7,7 @@ class buyerUseCase {
         this.iBuyerInterface = iBuyerInterface
     }
 
-    async findUser() {
+    async findUser(name:string,email:string,password:string) {
         try {
             console.log('inside findUser usecase');
             return {
@@ -18,3 +18,5 @@ class buyerUseCase {
         }
     }
 }
+
+export default buyerUseCase
