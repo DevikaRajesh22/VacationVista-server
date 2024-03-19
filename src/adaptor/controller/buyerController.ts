@@ -10,5 +10,8 @@ class buyerController{
         console.log('verifyEmail controller function')
         const { email, password, name } = req.body;
         const buyerData:any=await this.buyercase.findUser(name,email,password);
+        console.log('buyerdata',buyerData)
     }
 }
+
+export default buyerController

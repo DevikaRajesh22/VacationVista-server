@@ -1,6 +1,9 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from 'cookie-parser';
+import buyerRoute from '../routes/buyerRoutes'
+import sellerRoute from '../routes/sellerRoutes'
+import adminRoute from '../routes/adminRoutes'
 
 export const createServer = () => {
     try {
@@ -15,6 +18,9 @@ export const createServer = () => {
                 credentials: true
             })
         )
+        app.use('/api/seller',sellerRoute)
+        app.use('/api/buyer',buyerRoute)
+        app.use('/api/admin',adminRoute) 
         return app;
     } catch (error) {
         console.log(error);
