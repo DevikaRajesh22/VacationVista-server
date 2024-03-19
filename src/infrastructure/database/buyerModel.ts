@@ -2,7 +2,7 @@ import { timeStamp } from "console";
 import mongoose, { Schema } from "mongoose";
 import Buyer from "../../domain/buyer";
 
-const buyerSchema: Schema<Buyer> = new mongoose.Schema({
+const buyerSchema: Schema<Buyer> = new Schema({
     name: {
         type: String
     },

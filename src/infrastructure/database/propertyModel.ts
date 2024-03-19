@@ -2,7 +2,7 @@ import { timeStamp } from "console";
 import mongoose, { Schema } from "mongoose";
 import Property from "../../domain/property";
 
-const propertySchema: Schema<Property> = new mongoose.Schema({
+const propertySchema: Schema<Property> = new Schema({
     category: {
         type: String,
         required: true,
