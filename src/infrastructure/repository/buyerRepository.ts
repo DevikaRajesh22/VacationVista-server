@@ -7,8 +7,14 @@ import { deflate } from "zlib";
 
 class buyerRepository implements IBuyerRepository {
     async findByEmail(email: string) {
+        console.log('findByEmail repository');
         const buyerExists=await BuyerModel.findOne({email:email});
-        return buyerExists;
+        if(buyerExists){
+            return buyerExists;
+        }else{
+            return null
+        }
+        
     }
     // async saveBuyer(buyer: Buyer): Promise<any> {
 
