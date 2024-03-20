@@ -16,9 +16,13 @@ class buyerRepository implements IBuyerRepository {
         }
         
     }
-    // async saveBuyer(buyer: Buyer): Promise<any> {
-
-    // }
+    async saveBuyer(buyer: Buyer): Promise<any> {
+        console.log('save buyer repository');
+        const newBuyer=new BuyerModel(buyer)
+        await newBuyer.save()
+        console.log('saved')
+        return newBuyer
+    }
     // async changePassword(email: string, password: string): Promise<void> {
 
     // }

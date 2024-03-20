@@ -4,7 +4,8 @@ import Buyer from "../../domain/buyer";
 
 const buyerSchema: Schema<Buyer> = new Schema({
     name: {
-        type: String
+        type: String,
+        required:true
     },
     email: {
         type: String,
@@ -12,6 +13,7 @@ const buyerSchema: Schema<Buyer> = new Schema({
     },
     password: {
         type: String,
+        required:true
     },
     isBlocked: {
         type: Boolean,
@@ -19,14 +21,12 @@ const buyerSchema: Schema<Buyer> = new Schema({
     },
     dateOfBirth: {
         type: Date,
-        required: true
     },
     phone: {
         type: String
     },
     govtId: {
         type: String,
-        required: true
     },
     creationTime: {
         type: Date,
