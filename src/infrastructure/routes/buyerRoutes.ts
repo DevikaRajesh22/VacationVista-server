@@ -5,13 +5,15 @@ import express from "express";
 import otpGenerate from "../utils/otpGenerate";
 import sendMail from "../utils/sendMail";
 import hashPassword from '../utils/hashPassword';
+import JWTtoken from "../utils/JWTtoken";
 
 const repository=new buyerRepository()
 const otp=new otpGenerate()
 const otpSend=new sendMail()
 const hashPwd=new hashPassword()
+const jwt=new JWTtoken() 
 
-const buyercase=new buyerUseCase(repository,otp,otpSend,hashPwd)
+const buyercase=new buyerUseCase(repository,otp,otpSend,hashPwd,jwt)
 const controller=new buyerController(buyercase)
 
 const router = express.Router()

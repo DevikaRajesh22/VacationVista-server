@@ -60,6 +60,14 @@ class buyerController {
   async login(req:Request,res:Response){
     try{
       console.log('login controller')
+      const buyer=await this.buyercase.buyerLogin(req.body)
+      if(buyer && buyer.data && typeof buyer.data=='object' && 'token' in buyer.data){
+        res.cookie('buyerJWT',buyer.data.token,{
+          expires:new Date(Date.now()+25892000000),
+          httpOnly:true,
+        })
+      }
+      res.status(buyer!.status).json(buyer!.data)
     }catch(error){
       console.log(error)
     }
