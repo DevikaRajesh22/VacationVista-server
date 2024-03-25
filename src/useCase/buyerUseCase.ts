@@ -104,7 +104,6 @@ class buyerUseCase {
           buyer.password,
           buyerFound.password
         );
-        console.log(passwordMatch);
         if (passwordMatch) {
           const token = this.JWTtoken.createJwt(buyerFound._id, "buyer");
           return {
@@ -132,6 +131,31 @@ class buyerUseCase {
             success: false,
             message: "Incorrect password or email",
           },
+        };
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async gSignup(name: string, email: string, password: string) {
+    try {
+      const buyerFound = await this.iBuyerRepository.findByEmail(email);
+      if (buyerFound) {
+        return {
+          status: 200,
+          data: false,
+        };
+      } else {
+        const hashedPassword = await this.hashPassword.createHash(password);
+        const buyerSave = await this.iBuyerRepository.saveBuyer({
+          name,
+          email,
+          password: hashedPassword,
+        } as Buyer);
+        return {
+          status: 200,
+          data: buyerSave,
         };
       }
     } catch (error) {

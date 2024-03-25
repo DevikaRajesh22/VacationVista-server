@@ -88,6 +88,12 @@ class buyerController {
       console.log(error);
     }
   }
+
+  async gsignup(req:Request,res:Response){
+    const {email,name,password} =  req.body
+    const buyer=await this.buyercase.gSignup(name,email,password)
+    res.status(200).json(buyer)
+  }
 }
 
 export default buyerController;
