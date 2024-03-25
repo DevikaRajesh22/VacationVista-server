@@ -4,11 +4,7 @@ import jwt from 'jsonwebtoken';
 import Joi from 'joi';
 import passwordComplexity from 'joi-password-complexity';
 
-interface BuyerDocument extends Buyer, Document {
-    generateAuthToken: () => string;
-}
-
-const buyerSchema:  Schema<BuyerDocument>  = new Schema({
+const buyerSchema:  Schema<Buyer>  = new Schema({
     name: {
         type: String,
         required:true
@@ -45,7 +41,7 @@ buyerSchema.methods.generateAuthToken = function (): string {
     return token;
 };
 
-const BuyerModel: Model<BuyerDocument> = mongoose.model<BuyerDocument>('buyer', buyerSchema);
+const BuyerModel: Model<Buyer> = mongoose.model<Buyer>('buyer', buyerSchema);
 
 const validate = (data: any): Joi.ValidationResult<any> => {
     const schema = Joi.object({

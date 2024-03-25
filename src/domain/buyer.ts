@@ -7,6 +7,7 @@ interface Buyer {
     dateOfBirth: Date,
     phone:string,
     govtId:string,
-    creationTime:Date
+    creationTime:Date,
+    generateAuthToken: () => string
 }
 export default Buyer
