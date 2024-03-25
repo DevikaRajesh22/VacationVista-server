@@ -47,32 +47,47 @@ class buyerController {
     }
   }
 
-  async resendOtp(req:Request,res:Response){
-    try{
-      const buyer=req.app.locals.buyer
-      const send=await this.buyercase.resendOtp(buyer)
-      req.app.locals.otp=send?.data?.otp
-    }catch(error){
-      console.log(error)
+  async resendOtp(req: Request, res: Response) {
+    try {
+      const buyer = req.app.locals.buyer;
+      const send = await this.buyercase.resendOtp(buyer);
+      req.app.locals.otp = send?.data?.otp;
+    } catch (error) {
+      console.log(error);
     }
   }
 
-  async login(req:Request,res:Response){
-    try{
-      console.log('login controller')
-      const buyer=await this.buyercase.buyerLogin(req.body)
-      if(buyer && buyer.data && typeof buyer.data=='object' && 'token' in buyer.data){
-        res.cookie('buyerJWT',buyer.data.token,{
-          expires:new Date(Date.now()+25892000000),
-          httpOnly:true,
-        })
+  async login(req: Request, res: Response) {
+    try {
+      const buyer = await this.buyercase.buyerLogin(req.body);
+      if (
+        buyer &&
+        buyer.data &&
+        typeof buyer.data == "object" &&
+        "token" in buyer.data
+      ) {
+        res.cookie("buyerJWT", buyer.data.token, {
+          expires: new Date(Date.now() + 25892000000),
+          httpOnly: true,
+        });
       }
-      res.status(buyer!.status).json(buyer!.data)
-    }catch(error){
-      console.log(error)
+      res.status(buyer!.status).json(buyer!.data);
+    } catch (error) {
+      console.log(error);
     }
   }
 
+  async logout(req: Request, res: Response) {
+    try {
+      res.cookie("buyerJWT", "", {
+        httpOnly: true,
+        expires: new Date(0),
+      });
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
 export default buyerController;
