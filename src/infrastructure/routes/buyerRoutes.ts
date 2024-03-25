@@ -19,5 +19,6 @@ const router = express.Router()
 router.post('/verifyMail',(req,res)=>{controller.verifyEmail(req,res)});
 router.post('/verifyOtp',(req,res)=>{controller.verifyOtp(req,res)});
 router.post('/resendOtp',(req,res)=>{controller.resendOtp(req,res)});
+router.post('/login',(req,res)=>{controller.login(req,res)});
 
 export default router

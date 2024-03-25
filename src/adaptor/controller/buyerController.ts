@@ -56,6 +56,15 @@ class buyerController {
       console.log(error)
     }
   }
+
+  async login(req:Request,res:Response){
+    try{
+      console.log('login controller')
+    }catch(error){
+      console.log(error)
+    }
+  }
+
 }
 
 export default buyerController;
