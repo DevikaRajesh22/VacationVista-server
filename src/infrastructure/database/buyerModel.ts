@@ -1,8 +1,5 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Model } from "mongoose";
 import Buyer from "../../domain/buyer";
-import jwt from 'jsonwebtoken';
-import Joi from 'joi';
-import passwordComplexity from 'joi-password-complexity';
 
 const buyerSchema:  Schema<Buyer>  = new Schema({
     name: {
@@ -36,25 +33,5 @@ const buyerSchema:  Schema<Buyer>  = new Schema({
     }
 });
 
-buyerSchema.methods.generateAuthToken = function (): string {
-    const token = jwt.sign({ _id: this._id }, process.env.JWTPRIVATEKEY || '', { expiresIn: "7d" });
-    return token;
-};
-
 const BuyerModel: Model<Buyer> = mongoose.model<Buyer>('buyer', buyerSchema);
-
-const validate = (data: any): Joi.ValidationResult<any> => {
-    const schema = Joi.object({
-        name: Joi.string().required().label('Name'),
-        email: Joi.string().required().label('Email'),
-        password: passwordComplexity().required().label('Password'),
-        isBlocked: Joi.boolean().label('IsBlocked'),
-        dateOfBirth: Joi.date().label('DateOfBirth'),
-        phone: Joi.string().label('Phone'),
-        govtId: Joi.string().label('GovtId'),
-        creationTime: Joi.date().label('CreationTime')
-    });
-    return schema.validate(data);
-};
-
-export { BuyerModel, validate };
+export { BuyerModel};
