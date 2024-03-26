@@ -20,7 +20,6 @@ class adminUseCase {
 
     async adminLogin(admin: any) {
         try {
-            console.log("usecase");
             const adminFound: any = await this.iAdminRepository.findByEmail(
                 admin.email
             );

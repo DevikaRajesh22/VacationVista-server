@@ -9,7 +9,6 @@ class adminController {
 
   async login(req: Request, res: Response) {
     try {
-      console.log("controller");
       const admin = await this.admincase.adminLogin(req.body);
       if (
         admin &&
@@ -25,6 +24,18 @@ class adminController {
       res.status(admin!.status).json(admin!.data);
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async logout(req:Request,res:Response){
+    try{
+        res.cookie("adminJWT","",{
+            httpOnly:true,
+            expires:new Date(0)
+        });
+        res.status(200).json({success:true})
+    }catch(error){
+        console.log(error)
     }
   }
 }
