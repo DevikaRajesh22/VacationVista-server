@@ -6,6 +6,7 @@ import otpGenerate from "../utils/otpGenerate";
 import sendMail from "../utils/sendMail";
 import hashPassword from '../utils/hashPassword';
 import JWTtoken from "../utils/JWTtoken";
+import authenticate from '../middleware/buyerAuth';
 
 const repository=new buyerRepository()
 const otp=new otpGenerate()
@@ -24,5 +25,6 @@ router.post('/resendOtp',(req,res)=>{controller.resendOtp(req,res)});
 router.post('/login',(req,res)=>{controller.login(req,res)});
 router.post('/logout',(req,res)=>{controller.logout(req,res)});
 router.post('/gsignup',(req,res)=>{controller.gsignup(req,res)});
+router.get('/profile',authenticate,(req,res)=>{controller.profile(req,res)})
 
 export default router

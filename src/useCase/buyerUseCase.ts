@@ -4,6 +4,7 @@ import otpGenerate from "../infrastructure/utils/otpGenerate";
 import sendMail from "../infrastructure/utils/sendMail";
 import hashPassword from "../infrastructure/utils/hashPassword";
 import JWTtoken from "../infrastructure/utils/JWTtoken";
+import jwt from "jsonwebtoken";
 
 class buyerUseCase {
   private iBuyerRepository: IBuyerRepository;
@@ -26,9 +27,11 @@ class buyerUseCase {
     this.JWTtoken = JWTtoken;
   }
 
-  async findBuyer(name: string, email: string, password: string) {
+  async findBuyer(buyerInfo: Buyer) {
     try {
-      const buyerFound = await this.iBuyerRepository.findByEmail(email);
+      const buyerFound = await this.iBuyerRepository.findByEmail(
+        buyerInfo.email
+      );
       if (buyerFound) {
         return {
           status: 200,
@@ -39,12 +42,21 @@ class buyerUseCase {
       } else {
         const otp = await this.otpGenerate.generateOtp(4);
         console.log(`OTP : ${otp}`);
-        const mail = await this.sendMail.sendMail(name, email, otp);
+        let token = jwt.sign(
+          { buyerInfo, otp },
+          process.env.JWT_KEY as string,
+          { expiresIn: "5m" }
+        );
+        const mail = await this.sendMail.sendMail(
+          buyerInfo.name,
+          buyerInfo.email,
+          otp
+        );
         return {
           status: 200,
           data: {
             data: false,
-            otp: otp,
+            token: token,
           },
         };
       }
@@ -71,15 +83,33 @@ class buyerUseCase {
     }
   }
 
-  async saveBuyer(buyer: Buyer) {
+  async saveBuyer(token: string, buyerOtp: string) {
     try {
-      const hashedPassword = await this.hashPassword.createHash(buyer.password);
-      buyer.password = hashedPassword;
-      const buyerSave = await this.iBuyerRepository.saveBuyer(buyer);
-      return {
-        status: 200,
-        data: buyerSave,
-      };
+      let decodeToken = this.JWTtoken.verifyJwt(token);
+      if (decodeToken) {
+        if (buyerOtp == decodeToken.otp) {
+          const hashedPassword = await this.hashPassword.createHash(
+            decodeToken.buyerInfo.password
+          );
+          decodeToken.buyerInfo.password = hashedPassword;
+          const buyerSave = await this.iBuyerRepository.saveBuyer(
+            decodeToken.buyerInfo
+          );
+          if (buyerSave) {
+            let createdToken = this.JWTtoken.createJwt(
+              buyerSave._id as string,
+              "buyer"
+            );
+            return { success: true, token };
+          } else {
+            return { success: false, message: "Internal server error!" };
+          }
+        } else {
+          return { success: false, message: "Incorrect OTP!" };
+        }
+      } else {
+        return { success: false, message: "No token!Try again!" };
+      }
     } catch (error) {
       console.log(error);
     }
