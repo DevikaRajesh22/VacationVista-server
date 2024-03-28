@@ -14,6 +14,9 @@ const buyerSchema:  Schema<Buyer>  = new Schema({
         type: String,
         required:true
     },
+    image:{
+        type:String
+    },
     isBlocked: {
         type: Boolean,
         default: false

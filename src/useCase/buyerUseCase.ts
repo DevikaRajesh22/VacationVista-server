@@ -5,6 +5,7 @@ import sendMail from "../infrastructure/utils/sendMail";
 import hashPassword from "../infrastructure/utils/hashPassword";
 import JWTtoken from "../infrastructure/utils/JWTtoken";
 import jwt from "jsonwebtoken";
+import { decode } from "punycode";
 
 class buyerUseCase {
   private iBuyerRepository: IBuyerRepository;
@@ -65,8 +66,33 @@ class buyerUseCase {
     }
   }
 
+  async resendOtpDecode(token: string) {
+    try {
+      const decodedToken = this.JWTtoken.verifyJwt(token);
+      if (!decodedToken) {
+        return { success: false, message: "Invalid token !!" };
+      }
+      return decodedToken;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async resendOtpEncode(buyerInfo:any){
+    try{
+      console.log('enc')
+      const { otp, ...buyerData } = buyerInfo; 
+      const payload = { ...buyerData, otp };
+      const updatedToken = this.JWTtoken.createJwt(payload, "buyer");
+      return updatedToken;
+    }catch(error){
+      console.log(error)
+    }
+  }
+
   async resendOtp(buyer: Buyer) {
     try {
+      console.log('resend usecase')
       const { name, email } = buyer;
       const otp = await this.otpGenerate.generateOtp(4);
       console.log(`OTP : ${otp}`);
@@ -87,6 +113,7 @@ class buyerUseCase {
     try {
       let decodeToken = this.JWTtoken.verifyJwt(token);
       if (decodeToken) {
+        console.log(decodeToken.otp,buyerOtp)
         if (buyerOtp == decodeToken.otp) {
           const hashedPassword = await this.hashPassword.createHash(
             decodeToken.buyerInfo.password
@@ -115,53 +142,24 @@ class buyerUseCase {
     }
   }
 
-  async buyerLogin(buyer: any) {
+  async buyerLogin(email: string, password: string) {
     try {
-      const buyerFound: any = await this.iBuyerRepository.findByEmail(
-        buyer.email
-      );
+      const buyerFound: any = await this.iBuyerRepository.findByEmail(email);
       if (buyerFound) {
-        if (buyerFound.isBlocked) {
-          return {
-            status: 200,
-            data: {
-              success: false,
-              message: "Blocked user !!",
-            },
-          };
-        }
-        const passwordMatch = await this.hashPassword.compare(
-          buyer.password,
+        let passwordMatch = await this.hashPassword.compare(
+          password,
           buyerFound.password
         );
-        if (passwordMatch) {
-          const token = this.JWTtoken.createJwt(buyerFound._id, "buyer");
-          return {
-            status: 200,
-            data: {
-              success: true,
-              message: "Authenticated successfully",
-              buyerId: buyerFound._id,
-              token: token,
-            },
-          };
+        if (!passwordMatch) {
+          return { success: false, message: "Incorrect password" };
+        } else if (buyerFound.isBlocked) {
+          return { success: false, message: "User is blocked by admin!" };
         } else {
-          return {
-            status: 200,
-            data: {
-              success: false,
-              message: "Incorrect password or email",
-            },
-          };
+          let token = this.JWTtoken.createJwt(buyerFound._id, "buyer");
+          return { success: true, token: token };
         }
       } else {
-        return {
-          status: 200,
-          data: {
-            success: false,
-            message: "Incorrect password or email",
-          },
-        };
+        return { success: false, message: "Email not found" };
       }
     } catch (error) {
       console.log(error);
@@ -190,6 +188,16 @@ class buyerUseCase {
       }
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async buyerGetProfile(buyerId:string){
+    try{
+      console.log('profile usecase')
+      const buyer=await this.iBuyerRepository.findBuyerById(buyerId)
+      return buyer
+    }catch(error){
+      console.log(error)
     }
   }
 }

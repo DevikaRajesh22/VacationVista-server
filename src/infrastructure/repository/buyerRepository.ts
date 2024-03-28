@@ -27,6 +27,18 @@ class buyerRepository implements IBuyerRepository {
       return null;
     }
   }
+
+  async findBuyerById(id:string):Promise<Buyer|null>{
+    try{
+      console.log('findbuyerbyid')
+      let buyerData:Buyer|null=await BuyerModel.findById(id)
+      console.log(buyerData)
+      return buyerData
+    }catch(error){
+      console.log(error)
+      return null
+    }
+  }
 }
 
 export default buyerRepository;

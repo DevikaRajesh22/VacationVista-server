@@ -20,21 +20,32 @@ declare global{
 
 const buyerAuth=async(req:Request,res:Response,next:NextFunction)=>{
     console.log('buyer auth')
-    let token=req.cookies.token
+    console.log(req.cookies)
+    let token=req.cookies.buyerToken
     console.log(token)
     if(!token){
         return res.status(401).json({success:false,message:"Unauthorized - No token provided"})
     }
     try{
         const decodeToken=jwt.verifyJwt(token)
+        console.log('decodeToken',decodeToken)
         if(decodeToken && decodeToken.role!='buyer'){
             return res.status(401).send({success:false,message:"Unauthorized - Invalid token"})
         }
-        // if(decodeToken && decodeToken.id){
-        //     let buyer=await 
-        // }
+        if(decodeToken && decodeToken.id){
+            let buyer=await repository.findBuyerById(decodeToken?.id)
+            if(decodeToken?.isBlocked){
+                return res.status(401).send({success:false,message:'User is blocked !!'})
+            }else{
+                req.buyerId=decodeToken.id
+                next()
+            }
+        }else{
+            return res.status(401).send({success:false,message:"Unauthorized - Invalid token"})
+        }
     }catch(error){
         console.log(error)
+        return res.status(401).send({success:false,message:"Unauthorized - Invalid token"})
     }
 }
 
